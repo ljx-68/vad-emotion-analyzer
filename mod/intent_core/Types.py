@@ -197,10 +197,10 @@ class ClauseRecord:
     @classmethod
     def from_dict(cls, data: dict) -> "ClauseRecord":
         return cls(
-            text=data["text"],
-            vad=tuple(data["vad"]),
-            relation=data.get("relation", ""),
-            emotions={
+            text = data["text"],
+            vad = tuple(data["vad"]),
+            relation = data.get("relation", ""),
+            emotions = {
                 e: EmotionScore.from_dict(s)
                 for e, s in data.get("emotions", {}).items()
             },

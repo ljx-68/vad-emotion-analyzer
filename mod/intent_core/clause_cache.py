@@ -18,18 +18,22 @@ class ClauseCache:
         if self.path.exists():
             with self.path.open("r", encoding="utf-8") as f:
                 for line in f:
-                    line = line.strip()
-                    if not line:
+                    obj = self._load_2(line.strip())
+                    if obj is None:
                         continue
-                    try:
-                        obj = json.loads(line)
-                    except json.JSONDecodeError:
-                        continue
-                    key = obj.get("text", "")
-                    if key:
-                        self._cache[key] = obj
+                    self._load_3(obj)
         self._loaded = True
-
+    def _load_2(self, line: str)->None | str:
+        if not line:
+            return None
+        try:
+            return json.loads(line)
+        except json.JSONDecodeError:
+            return None
+    def _load_3(self, obj: dict) -> None:
+        key = obj.get("text", "")
+        if key:
+            self._cache[key] = obj
     def get(self, text: str) -> dict | None:
         self._load()
         result = self._cache.get(text)

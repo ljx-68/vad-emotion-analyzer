@@ -33,7 +33,8 @@ class Intent:
                 [e.to_dict() for e in node.emotions],
                 node.vad,
             )
-    def calculate_vad(self, node: ClauseNode)->None:
+
+    def calculate_node_vad(self, node: ClauseNode) -> None:
         for child in node.children:
             self._fill_with_cache(child)
 
@@ -54,7 +55,7 @@ class Intent:
                     return
             self.process_emotion(node)
             return
-        self.calculate_vad(node)
+        self.calculate_node_vad(node)
     def normalize_emotions(self, emotions)->dict[str, float]:
         active: dict[str, float] = {}
         for s in emotions:
@@ -133,7 +134,6 @@ class Intent:
     def process(self, text: str) -> ClauseNode:
         if not text or not text.strip():
             return ClauseNode(text = "", start = 0, end = 0, level = 0, vad = [0.5, 0.5, 0.5])
-
         try:
             tree = self.splitter.split(text)
         except Exception as e:

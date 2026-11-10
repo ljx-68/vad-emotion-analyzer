@@ -22,23 +22,30 @@ class ClauseStore:
 
         self.backup_max_size = backup_max_size
         self._backup_count = 0
+
     def _load(self):
         if self._loaded:
             return
         if self.path.exists():
             with self.path.open("r", encoding="utf-8") as f:
                 for line in f:
-                    line = line.strip()
-                    if not line:
-                        continue
-                    try:
-                        obj = json.loads(line)
-                    except json.JSONDecodeError:
-                        continue
-                    if self.key in obj:
-                        self._cache[obj[self.key]] = obj
+                    obj = self._parse_line(line.strip())
+                    if obj is not None:
+                        self._save_to_cache(obj)
         self._loaded = True
 
+    def _parse_line(self, line: str) -> dict | None:
+        if not line:
+            return None
+        try:
+            return json.loads(line)
+        except json.JSONDecodeError:
+            return None
+
+    def _save_to_cache(self, obj: dict) -> None:
+        key = obj.get(self.key, "")
+        if key:
+            self._cache[key] = obj
     def _backup(self, old: dict) -> None:
         if self._backup_count >= self.backup_max_size:
             return

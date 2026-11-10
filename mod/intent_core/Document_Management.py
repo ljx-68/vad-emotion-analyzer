@@ -49,7 +49,6 @@ def load_emotion_data(address = "feelings") -> dict[str, list[dict]]:
 
     return result
 
-
 def _load_json(path: Path):
     try:
         with path.open("r", encoding = "utf-8") as f:
@@ -164,7 +163,7 @@ def load_relation_rules() -> tuple[RelationRule, ...]:
         ))
 
     return tuple(sorted(rules, key = lambda r: r.priority))
-
+print(load_relation_rules())
 class JSONLStorage:
     def __init__(self, path: str, key: str = "sentence", mod: str = "a"):
         self.path = Path(path)
@@ -217,8 +216,8 @@ def result_to_record(result: tuple) -> InferenceRecord:
     for clause_text, scores, vad in clauses_data:
         emotions = {}
         for emo, s in scores.items():
-            emotions[emo] = EmotionScore(          # ← 改这里
-                emotion = emo,                       # ← 补 emotion 字段
+            emotions[emo] = EmotionScore(
+                emotion = emo,
                 raw = s.raw,
                 intensity = s.intensity,
                 neg_count = s.neg_count,
@@ -422,5 +421,3 @@ def load_corpus_csv(
                 "rest_id": row[1] if len(row) > 1 else "",
             })
     return rows
-if __name__ == "__main__":
-    build_grammar_lexicon(".")
