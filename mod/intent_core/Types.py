@@ -237,11 +237,9 @@ class InferenceRecord:
 @dataclass(frozen=True)
 class NegationLexicon:
     words: frozenset[str] = frozenset()
-
     def count(self, text: str) -> int:
         words = sorted(self.words, key=len, reverse=True)
-        count = 0
-        i = 0
+        count = 0; i = 0
         while i < len(text):
             for w in words:
                 if text.startswith(w, i):
@@ -255,25 +253,26 @@ class NegationLexicon:
 @dataclass(frozen=True)
 class ModifierLexicon:
     modifiers: dict[str, float] = field(default_factory=dict)
-
     def find(self, text: str) -> tuple[str, float] | None:
         for word in sorted(self.modifiers, key=len, reverse=True):
             if word in text:
                 return word, self.modifiers[word]
         return None
-
     def find_all(self, text: str) -> list[tuple[str, float]]:
         hits = []
         for word, coef in self.modifiers.items():
-            start = 0
-            while True:
-                idx = text.find(word, start)
-                if idx == -1:
-                    break
-                hits.append((word, coef))
-                start = idx + len(word)
+            hits.extend(self.find_break(text, word, coef))
         return hits
-
+    def find_break(self, text: str, hits: list,
+                   word: str, coef: float)->list[tuple[str, float]]:
+        start = 0
+        while True:
+            idx = text.find(word, start)
+            if idx == -1:
+                break
+            hits.append((word, coef))
+            start = idx + len(word)
+        return hits
 @dataclass(frozen=True)
 class ContextPattern:
     name: str
@@ -317,10 +316,9 @@ class analyze_tpye:
         "vad": tree.vad,
         "has_emotion": tree.has_emotion(),
         "tree": tree.to_dict(),
-        "clauses": [
-            {
+        "clauses": [{
                 "text": i.text,
                 "vad": i.vad,
                 "emotions": [e.emotion for e in i.emotions],
                 "has_emotion": bool(i.emotions),
-            }for i in tree.iter_leaves()],}
+                }for i in tree.iter_leaves()],}

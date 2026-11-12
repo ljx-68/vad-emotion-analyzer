@@ -44,28 +44,14 @@ typedef struct {
     int out_dim;     
 } NeuralNetwork;
 
-ErrorCode tfe_network_init(NeuralNetwork *net, int out_dim);
-
-void      tfe_network_free(NeuralNetwork *net);
-
-ErrorCode tfe_sample_init(Sample *s, const char *text, const double *vad);
-
-void      tfe_sample_free(Sample *s);
-
-ErrorCode tfe_extract(TextFeatureExtractor *self, Sample *sample);
-
 ErrorCode tfe_forward(TextFeatureExtractor *ext, NeuralNetwork *net);
+ErrorCode tfe_backward(TextFeatureExtractor *ext, NeuralNetwork *net, const double *Y_true, double lr);
 
-ErrorCode tfe_network_reset(NeuralNetwork *net, double number);
+void train_batch_for_python(NeuralNetwork *net, double *batch_X, double *batch_Y, int batch_size, double lr);
+void forward_only_for_python(NeuralNetwork *net, double *X, double *out_y);
 
-ErrorCode tfe_backward(TextFeatureExtractor *ext, NeuralNetwork *net,
-                       const double *Y_true, double lr);
-ErrorCode tfe_extractor_init(TextFeatureExtractor *T, const char **vocad, int vocad_size);
-void predict_for_python(TextFeatureExtractor *ext, NeuralNetwork *net, CSample *csample, double *out_y);
-void tfe_extractor_free(TextFeatureExtractor *T);
 int save_weights(NeuralNetwork *net, const char *filename);
 int load_weights(NeuralNetwork *net, const char *filename);
-void train_batch_for_python(NeuralNetwork *net, double *batch_X, double *batch_Y, int batch_size, double lr);
 #ifdef __cpluspleus
 }
 #endif

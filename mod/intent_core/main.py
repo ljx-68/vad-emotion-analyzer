@@ -133,12 +133,14 @@ class Intent:
         ]
     def process(self, text: str) -> ClauseNode:
         if not text or not text.strip():
-            return ClauseNode(text = "", start = 0, end = 0, level = 0, vad = [0.5, 0.5, 0.5])
+            return ClauseNode(text = "", start = 0,
+                    end = 0, level = 0, vad = [0.5, 0.5, 0.5])
         try:
             tree = self.splitter.split(text)
         except Exception as e:
             self.logger.warning(f"断句失败: {text[:30]!r}: {e}")
-            return ClauseNode(text = text, start = 0, end = len(text), level = 0, vad = [0.5, 0.5, 0.5])
+            return ClauseNode(text = text, start = 0, end = len(text),
+                              level = 0, vad = [0.5, 0.5, 0.5])
         self._fill_with_cache(tree)
         return tree
     def process_batch(self, texts: list[str]) -> list[ClauseNode]:
@@ -149,10 +151,8 @@ class Intent:
             f = self._filter_tree(c)
             if f is not None:
                 children.append(f)
-
         if not children and not node.emotions:
             return None
-
         new = copy.copy(node)
         new.children = children
         new.parent = None
